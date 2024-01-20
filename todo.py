@@ -37,7 +37,9 @@ exp [] export history in various different formats to file
 
 """
 class ToDo():
-    def __init__(self) -> None:
+    def __init__(self, tasks_settings_filepath, completion_history_filepath) -> None:
+        self.tasks_settings_filepath = tasks_settings_filepath
+        self.completion_history_filepath = completion_history_filepath
         self.commandDict = {
             ("display", "disp",): {
                 "func": self.setDisplay,
@@ -382,16 +384,18 @@ class ToDo():
         print(self.generateLine(widths))
         sys.stdout.flush()
     
-    def saveTasksAndSettings(self, filename="tasks_and_settings"):
+    def saveTasksAndSettings(self):
+        filename = self.tasks_settings_filepath
         tasks_and_settings = {
             "tasks": self.taskDict,
             "settings": {k: getattr(self, k) for k in self.settings.keys()},
         }
 
-        with open(f'{filename}.json', 'w') as jsonfile:
+        with open(filename, 'w') as jsonfile:
             json.dump(tasks_and_settings, jsonfile)
 
-    def loadTasksAndSettings(self, filename="tasks_and_settings.json"):
+    def loadTasksAndSettings(self):
+        filename = self.tasks_settings_filepath
         try:
             with open(filename, 'r') as jsonfile:
                 tasks_and_settings = json.load(jsonfile)
@@ -633,7 +637,7 @@ class ToDo():
         id = self.findItemWrapper(item)
         if id is None:
             return
-        status = self.append_task_to_csv(self.taskDict[id], "MinTodoHistory.csv", reason, date)
+        status = self.append_task_to_csv(self.taskDict[id], self.completion_history_filepath, reason, date)
         if not status:
             print("Unable to write to history file because it is open in another program. Please close the file and try again.")
         else:
@@ -689,9 +693,15 @@ class ToDo():
             print("Not yet supported")
             return
 
-###
-
-td = ToDo()
+### 
+mode = "dev"
+if mode == "me":
+    td = ToDo(tasks_settings_filepath=r"C:\Users\patri\OneDrive\Desktop\tasks_and_settings.json",
+            completion_history_filepath=r"C:\Users\patri\OneDrive\Desktop\MinTodoHistory.csv")
+elif mode == "dev":
+    td = ToDo(tasks_settings_filepath=r"example_config.json",
+            completion_history_filepath=r"CmdTodoHistory.csv")
+    
 td.loadTasksAndSettings()
 td.refresh_screen()
 while True:
