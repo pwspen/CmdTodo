@@ -694,7 +694,7 @@ class ToDo():
             return
 
 ### 
-mode = "dev"
+mode = "me"
 if mode == "me":
     td = ToDo(tasks_settings_filepath=r"C:\Users\patri\OneDrive\Desktop\tasks_and_settings.json",
             completion_history_filepath=r"C:\Users\patri\OneDrive\Desktop\MinTodoHistory.csv")
